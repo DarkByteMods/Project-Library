@@ -15,5 +15,11 @@ local button2 = tab2.addButton("Button 2", function()
 end
 ```
 ```lua
-local toggle1 = tab1.addToggle("Toggle 1")
+local toggle1 = uiLibrary.addToggle(tab1, "Toggle 1", function(state)
+    if state then
+        print("Toggle 1 is on")
+    else
+        print("Toggle 1 is off")
+    end
+end)
 ```
