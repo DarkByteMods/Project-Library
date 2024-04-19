@@ -1,6 +1,11 @@
 # $ Project Library
 
 # Project Library Is Maded By A Mobile for A Mobile
+# UI LIBRARY
+```lua
+loadstring(game:HttpGet("[https://pastebin.com/raw/GTZYwsPY](https://raw.githubusercontent.com/noGlxcka/Project-Library/main/UiLibrary)"))()
+```
+
 # TITLE
 ```lua
 local uiLibrary = UI.new("Project X")
