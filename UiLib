@@ -1,0 +1,19 @@
+-- example PROJECT X
+
+
+
+-- Example Usage:
+local uiLibrary = UI.new("Project X")    --Title
+
+-- Add tabs
+local tab1 = uiLibrary.addTab("Tab 1")
+local tab2 = uiLibrary.addTab("Tab 2")   -- features
+
+-- Add elements to tabs
+local button1 = tab1.addButton("Button 1")
+local toggle1 = tab1.addToggle("Toggle 1")
+local textBox1 = tab1.addTextBox()
+
+local button2 = tab2.addButton("Button 2")
+local toggle2 = tab2.addToggle("Toggle 2")
+local textBox2 = tab2.addTextBox()
