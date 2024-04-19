@@ -1,19 +1,31 @@
--- example PROJECT X
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/noGlxcka/Project-Library/main/UiLibrary"))()
 
--- Example Usage:
-local uiLibrary = UI.new("Project X")    --Title
+--MAIN
+
+local uiLibrary = UI.new("test")
 
 -- Add tabs
-local tab1 = uiLibrary.addTab("Tab 1")
-local tab2 = uiLibrary.addTab("Tab 2")   -- features
+local tab1 = uiLibrary.addTab("glxcka")
 
--- Add elements to tabs
-local button1 = tab1.addButton("Button 1")
-local toggle1 = tab1.addToggle("Toggle 1")
-local textBox1 = tab1.addTextBox()
+local button1 = tab1.addButton("glxcka", function()
+    print("Button 2 clicked!")
+end
 
-local button2 = tab2.addButton("Button 2")
-local toggle2 = tab2.addToggle("Toggle 2")
-local textBox2 = tab2.addTextBox()
+local toggle1 = uiLibrary.addToggle(tab1, "Toggle 1", function(state)
+    if state then
+        print("Toggle 1 is on")
+    else
+        print("Toggle 1 is off")
+    end
+end)
+
+-- Add dropdown to tab1
+local dropdown1 = uiLibrary.addDropdown(tab1, {"Option 1", "Option 2", "Option 3"}, "Select an option", function(selectedOption)
+    if selectedOption == "Option 1" then
+        print("hi")
+    elseif selectedOption == "Option 2" then
+        print("hello")
+    elseif selectedOption == "Option 3" then
+        print("Greetings!")
+    end
+end)
