@@ -9,7 +9,7 @@ local uiLibrary = UI.new("Project X")
 -- Add tabs
 local tab1 = uiLibrary.addTab("Tab 1")
 ```
-```
+```lua
 local button2 = tab2.addButton("Button 2", function()
     print("Button 2 clicked!")
 end
