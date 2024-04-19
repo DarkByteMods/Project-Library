@@ -1,5 +1,3 @@
-
-
 -- Create UI Library Class
 local UI = {}
 
@@ -15,8 +13,8 @@ function UI.new(title)
 
     -- Create the window frame
     self.windowFrame = Instance.new("Frame", self.screenGui)
-    self.windowFrame.Size = UDim2.new(0.5, 0, 0.5, 0) -- Change size as needed
-    self.windowFrame.Position = UDim2.new(0.25, 0, 0.25, 0) -- Change position as needed
+    self.windowFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
+    self.windowFrame.Position = UDim2.new(0.25, 0, 0.25, 0)
     self.windowFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Dark mode background color
     self.windowFrame.BorderSizePixel = 0
     self.windowFrame.ZIndex = 2
@@ -98,79 +96,88 @@ function UI.new(title)
         tab.frame.ZIndex = 3
         tab.frame.Visible = false
 
-        -- Add Button Method
-        function tab.addButton(buttonTitle)
-            local button = {}
-            button.title = buttonTitle
-
-            -- Create the button
-            button.button = Instance.new("TextButton", tab.frame)
-            button.button.Size = UDim2.new(0, 100, 0, 30)
-            button.button.Position = UDim2.new(0, #tab.buttons * 110, 0, 10)
-            button.button.Text = button.title
-            button.button.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode button color
-            button.button.BorderSizePixel = 0
-            button.button.TextColor3 = Color3.new(1, 1, 1)
-            button.button.Font = Enum.Font.SourceSansBold
-            button.button.TextSize = 14
-            button.button.ZIndex = 3
-            table.insert(tab.buttons, button)
-            return button
-        end
-
-        -- Add Toggle Method
-        function tab.addToggle(toggleTitle)
-            local toggle = {}
-            toggle.title = toggleTitle
-            toggle.state = false
-
-            -- Create the toggle
-            toggle.toggleButton = Instance.new("TextButton", tab.frame)
-            toggle.toggleButton.Size = UDim2.new(0, 100, 0, 30)
-            toggle.toggleButton.Position = UDim2.new(0, #tab.toggles * 110, 0, 50)
-            toggle.toggleButton.Text = toggle.title
-            toggle.toggleButton.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode toggle button color
-            toggle.toggleButton.BorderSizePixel = 0
-            toggle.toggleButton.TextColor3 = Color3.new(1, 1, 1)
-            toggle.toggleButton.Font = Enum.Font.SourceSansBold
-            toggle.toggleButton.TextSize = 14
-            toggle.toggleButton.ZIndex = 3
-            toggle.toggleButton.MouseButton1Click:Connect(function()
-                toggle.state = not toggle.state
-                if toggle.state then
-                    toggle.toggleButton.Text = toggle.title .. " (On)"
-                    -- Add actions for toggle on
-                else
-                    toggle.toggleButton.Text = toggle.title .. " (Off)"
-                    -- Add actions for toggle off
-                end
-            end)
-            table.insert(tab.toggles, toggle)
-            return toggle
-        end
-
-        -- Add TextBox Method
-        function tab.addTextBox()
-            local textBox = {}
-
-            -- Create the text box
-            textBox.textBox = Instance.new("TextBox", tab.frame)
-            textBox.textBox.Size = UDim2.new(0, 200, 0, 30)
-            textBox.textBox.Position = UDim2.new(0, #tab.textboxes * 210, 0, 90)
-            textBox.textBox.BackgroundTransparency = 0.5
-            textBox.textBox.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode text box color
-            textBox.textBox.BorderSizePixel = 0
-            textBox.textBox.TextColor3 = Color3.new(1, 1, 1)
-            textBox.textBox.Font = Enum.Font.SourceSans
-            textBox.textBox.TextSize = 14
-            textBox.textBox.ZIndex = 3
-            table.insert(tab.textboxes, textBox)
-            return textBox
-        end
-
         table.insert(self.tabs, tab)
         return tab
     end
+
+    -- Add Button Method
+    function self.addButton(tab, buttonTitle, onClick)
+        local button = {}
+        button.title = buttonTitle
+
+        -- Create the button
+        button.button = Instance.new("TextButton", tab.frame)
+        button.button.Size = UDim2.new(0, 100, 0, 30)
+        button.button.Position = UDim2.new(0, #tab.buttons * 110, 0, 10)
+        button.button.Text = button.title
+        button.button.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode button color
+        button.button.BorderSizePixel = 0
+        button.button.TextColor3 = Color3.new(1, 1, 1)
+        button.button.Font = Enum.Font.SourceSansBold
+        button.button.TextSize = 14
+        button.button.ZIndex = 3
+        button.button.MouseButton1Click:Connect(onClick)
+        table.insert(tab.buttons, button)
+        return button
+    end
+
+    -- Add Toggle Method
+    function self.addToggle(tab, toggleTitle, onToggle)
+        local toggle = {}
+        toggle.title = toggleTitle
+        toggle.state = false
+
+        -- Create the toggle
+        toggle.toggleButton = Instance.new("TextButton", tab.frame)
+        toggle.toggleButton.Size = UDim2.new(0, 100, 0, 30)
+        toggle.toggleButton.Position = UDim2.new(0, #tab.toggles * 110, 0, 50)
+        toggle.toggleButton.Text = toggle.title .. " (Off)"
+        toggle.toggleButton.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode toggle button color
+        toggle.toggleButton.BorderSizePixel = 0
+        toggle.toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggle.toggleButton.Font = Enum.Font.SourceSansBold
+        toggle.toggleButton.TextSize = 14
+        toggle.toggleButton.ZIndex = 3
+        toggle.toggleButton.MouseButton1Click:Connect(function()
+            toggle.state = not toggle.state
+            if toggle.state then
+                toggle.toggleButton.Text = toggle.title .. " (On)"
+            else
+                toggle.toggleButton.Text = toggle.title .. " (Off)"
+            end
+            onToggle(toggle.state)
+        end)
+        table.insert(tab.toggles, toggle)
+        return toggle
+    end
+
+-- Add TextBox Method
+function self.addTextBox(tab, placeholder, callback)
+    local textBox = {}
+
+    -- Create the text box
+    textBox.textBox = Instance.new("TextBox", tab.frame)
+    textBox.textBox.Size = UDim2.new(0, 200, 0, 30)
+    textBox.textBox.Position = UDim2.new(0, #tab.textboxes * 210, 0, 90)
+    textBox.textBox.BackgroundTransparency = 0.5
+    textBox.textBox.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode text box color
+    textBox.textBox.BorderSizePixel = 0
+    textBox.textBox.TextColor3 = Color3.new(1, 1, 1)
+    textBox.textBox.Font = Enum.Font.SourceSans
+    textBox.textBox.TextSize = 14
+    textBox.textBox.ZIndex = 3
+    textBox.textBox.PlaceholderText = placeholder
+    
+    -- Add event handler
+    textBox.textBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            callback(textBox.textBox.Text)
+        end
+    end)
+
+    table.insert(tab.textboxes, textBox)
+    return textBox
+end
 
     return self
 end
