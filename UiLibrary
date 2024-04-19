@@ -121,6 +121,80 @@ function UI.new(title)
         return button
     end
 
+
+-- Add Dropdown Method
+function self.addDropdown(tab, options, defaultOption, callback)
+    local dropdown = {}
+
+    -- Create the dropdown
+    dropdown.dropFrame = Instance.new("Frame", tab.frame)
+    dropdown.dropFrame.Size = UDim2.new(0, 200, 0, 30)
+    dropdown.dropFrame.Position = UDim2.new(0, #tab.dropdowns * 210, 0, 130)
+    dropdown.dropFrame.BackgroundTransparency = 0.5
+    dropdown.dropFrame.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode dropdown color
+    dropdown.dropFrame.BorderSizePixel = 0
+    dropdown.dropFrame.ZIndex = 3
+
+    dropdown.dropDown = Instance.new("TextButton", dropdown.dropFrame)
+    dropdown.dropDown.Size = UDim2.new(1, -30, 1, 0)
+    dropdown.dropDown.Position = UDim2.new(0, 0, 0, 0)
+    dropdown.dropDown.Text = defaultOption
+    dropdown.dropDown.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode dropdown button color
+    dropdown.dropDown.BorderSizePixel = 0
+    dropdown.dropDown.TextColor3 = Color3.new(1, 1, 1)
+    dropdown.dropDown.Font = Enum.Font.SourceSans
+    dropdown.dropDown.TextSize = 14
+    dropdown.dropDown.ZIndex = 4
+
+    dropdown.dropIcon = Instance.new("TextLabel", dropdown.dropFrame)
+    dropdown.dropIcon.Size = UDim2.new(0, 30, 1, 0)
+    dropdown.dropIcon.Position = UDim2.new(1, -30, 0, 0)
+    dropdown.dropIcon.Text = "▼"
+    dropdown.dropIcon.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode dropdown button color
+    dropdown.dropIcon.BorderSizePixel = 0
+    dropdown.dropIcon.TextColor3 = Color3.new(1, 1, 1)
+    dropdown.dropIcon.Font = Enum.Font.SourceSans
+    dropdown.dropIcon.TextSize = 14
+    dropdown.dropIcon.ZIndex = 4
+
+    dropdown.optionsFrame = Instance.new("Frame", dropdown.dropFrame)
+    dropdown.optionsFrame.Size = UDim2.new(1, 0, 0, #options * 30)
+    dropdown.optionsFrame.Position = UDim2.new(0, 0, 1, 0)
+    dropdown.optionsFrame.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode dropdown options color
+    dropdown.optionsFrame.BorderSizePixel = 0
+    dropdown.optionsFrame.ZIndex = 5
+    dropdown.optionsFrame.Visible = false
+
+    -- Add options
+    for i, optionText in ipairs(options) do
+        local optionButton = Instance.new("TextButton", dropdown.optionsFrame)
+        optionButton.Size = UDim2.new(1, 0, 0, 30)
+        optionButton.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
+        optionButton.Text = optionText
+        optionButton.BackgroundColor3 = Color3.fromRGB(38, 38, 38) -- Dark mode dropdown option color
+        optionButton.BorderSizePixel = 0
+        optionButton.TextColor3 = Color3.new(1, 1, 1)
+        optionButton.Font = Enum.Font.SourceSans
+        optionButton.TextSize = 14
+        optionButton.ZIndex = 6
+
+        optionButton.MouseButton1Click:Connect(function()
+            dropdown.dropDown.Text = optionText
+            dropdown.optionsFrame.Visible = false
+            callback(optionText)
+        end)
+    end
+
+    dropdown.dropDown.MouseButton1Click:Connect(function()
+        dropdown.optionsFrame.Visible = not dropdown.optionsFrame.Visible
+    end)
+
+    table.insert(tab.dropdowns, dropdown)
+    return dropdown
+end
+
+
+
     -- Add Toggle Method
     function self.addToggle(tab, toggleTitle, onToggle)
         local toggle = {}
