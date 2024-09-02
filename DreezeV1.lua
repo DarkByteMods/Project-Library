@@ -20,7 +20,7 @@ local dreezelib = {
       ["Color Stroke"] = Color3.fromRGB(40, 40, 40),
       ["Color Theme"] = Color3.fromRGB(255, 3, 3),
       ["Color Text"] = Color3.fromRGB(243, 243, 243),
-      ["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+      ["Color Dark Text"] = Color3.fromRGB(244, 0, 0)
     },
     Dark = {
       ["Color Hub 1"] = ColorSequence.new({
@@ -32,7 +32,7 @@ local dreezelib = {
       ["Color Stroke"] = Color3.fromRGB(65, 65, 65),
       ["Color Theme"] = Color3.fromRGB(244, 0, 0),
       ["Color Text"] = Color3.fromRGB(245, 245, 245),
-      ["Color Dark Text"] = Color3.fromRGB(190, 190, 190)
+      ["Color Dark Text"] = Color3.fromRGB(244, 0, 0)
     },
     Red = {
       ["Color Hub 1"] = ColorSequence.new({
@@ -44,7 +44,7 @@ local dreezelib = {
       ["Color Stroke"] = Color3.fromRGB(40, 40, 40),
       ["Color Theme"] = Color3.fromRGB(244, 0, 0),
       ["Color Text"] = Color3.fromRGB(240, 240, 240),
-      ["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+      ["Color Dark Text"] = Color3.fromRGB(244, 0, 0)
     }
   },
   Info = {
